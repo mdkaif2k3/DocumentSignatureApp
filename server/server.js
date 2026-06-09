@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
+const documentRoutes = require("./routes/documentRoutes");
 require("dotenv").config();
-
 
 const app = express();
 
@@ -23,6 +24,16 @@ app.get("/api/protected", authMiddleware, (req, res) => {
             user: req.user
         });
     }
+);
+
+app.use(
+    "/api/docs",
+    documentRoutes
+);
+
+app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "uploads"))
 );
 
 const PORT = process.env.PORT || 5000;
