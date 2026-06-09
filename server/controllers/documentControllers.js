@@ -28,3 +28,49 @@ exports.uploadDocument = async (req, res) => {
         });
     }
 };
+
+exports.getDocuments = async (req, res) => {
+    try {
+
+        const documents = await Document.find({
+            owner: req.user.id
+        }).sort({ createdAt: -1 });
+
+        res.status(200).json(documents);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+};
+
+exports.getDocumentById = async (req, res) => {
+    try {
+
+        const document = await Document.findById(req.params.id);
+
+        if (!document) {
+            return res.status(404).json({
+                message: "Document not found"
+            });
+        }
+
+        if (document.owner.toString() !== req.user.id) {
+            return res.status(403).json({
+                message: "Unauthorized"
+            });
+        }
+
+        res.status(200).json(document);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+};

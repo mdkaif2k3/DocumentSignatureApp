@@ -1,11 +1,17 @@
 import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import DocumentDetails from './pages/DocumentDetails';
 
 function App() {
   return (
-    <h1 className="text-4xl font-bold">
-      Document Signature App
-    </h1>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/documents/:id" element={<DocumentDetails />}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
