@@ -5,6 +5,7 @@ const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
 const documentRoutes = require("./routes/documentRoutes");
+const signatureRoutes = require("./routes/signatureRoutes");
 require("dotenv").config();
 
 const app = express();
@@ -13,6 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/signatures", signatureRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running");

@@ -32,10 +32,13 @@ function DocumentDetails() {
   }
 
   return (
-    <div>
+  <div>
     <h1>{doc.fileName}</h1>
     <PDFPreview fileUrl={`http://localhost:5000/${doc.filePath}`}/>
+    <div className="absolute border-2 border-blue-500 bg-blue-100 w-32 h-12" style={{left: "250px", top: "400px"}}>
+      Sign Here
     </div>
+  </div>
   );
 }
 
