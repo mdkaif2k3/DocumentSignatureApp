@@ -1,11 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import PDFPreview from "../components/PDFPreview";
 import axios from "axios";
+import { DndContext } from "@dnd-kit/core";
+import { saveSignature } from "../services/signatureService";
+import SignatureField from "../components/SignatureField";
 
 function DocumentDetails() {
   const { id } = useParams();
   const [doc, setDoc] = useState<any>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [relativeX, setRelativeX] =useState(0);
+  const [relativeY, setRelativeY] = useState(0);
+  const pdfRef = useRef<HTMLDivElement>(null);
+
+  const handleDragEnd = async (event:any) => { 
+  const { delta } = event;
+  const newX = position.x + delta.x;
+  const newY = position.y + delta.y;
+    setPosition({
+      x: newX,
+      y: newY
+    });
+  const rect = pdfRef.current?.getBoundingClientRect();
+  if (!rect) return;
+  setRelativeX((newX / rect.width) * 100);
+  setRelativeY((newY / rect.width) * 100);
+  console.log("drag ended");
+  };
+
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -32,13 +55,18 @@ function DocumentDetails() {
   }
 
   return (
-  <div>
-    <h1>{doc.fileName}</h1>
-    <PDFPreview fileUrl={`http://localhost:5000/${doc.filePath}`}/>
-    <div className="absolute border-2 border-blue-500 bg-blue-100 w-32 h-12" style={{left: "250px", top: "400px"}}>
-      Sign Here
+  <DndContext onDragEnd={handleDragEnd}>
+    <div ref={ pdfRef }>
+      <h1>{doc.fileName}</h1>
+      <PDFPreview fileUrl={`http://localhost:5000/${doc.filePath}`}/>
+      <div className="absolute z-50" style={{ left: position.x, top: position.y }}>
+        <SignatureField />
+      </div>
+      <button onClick={() => saveSignature(doc._id, relativeX, relativeY, 1)}>
+        Save Position
+      </button>
     </div>
-  </div>
+  </DndContext>
   );
 }
 
