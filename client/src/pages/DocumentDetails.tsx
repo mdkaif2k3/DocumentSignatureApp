@@ -7,6 +7,7 @@ import { saveSignature } from "../services/signatureService";
 import SignatureField from "../components/SignatureField";
 
 function DocumentDetails() {
+  const token = localStorage.getItem("token");
   const { id } = useParams();
   const [doc, setDoc] = useState<any>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -24,11 +25,30 @@ function DocumentDetails() {
     });
   const rect = pdfRef.current?.getBoundingClientRect();
   if (!rect) return;
-  setRelativeX((newX / rect.width) * 100);
-  setRelativeY((newY / rect.width) * 100);
+  const calculatedRelativeX = (newX / rect.width) * 100;
+  const calculatedRelativeY = (newY / rect.height) * 100;
+  setRelativeX(calculatedRelativeX);
+  setRelativeY(calculatedRelativeY);
+  console.log("X:", calculatedRelativeX);
+  console.log("Y:", calculatedRelativeY);
+  console.log(relativeX);
+  console.log(relativeY);
+  console.log(newX);
+  console.log(newY);
+  console.log(rect);
   console.log("drag ended");
   };
 
+  const generatePDF = async () => { 
+    await axios.post(`http://localhost:5000/api/pdf/generate/${doc._id}`,{},
+      {
+        headers:{
+          Authorization:
+          `Bearer ${token}`
+        }
+      }
+    );
+  };
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -56,14 +76,19 @@ function DocumentDetails() {
 
   return (
   <DndContext onDragEnd={handleDragEnd}>
-    <div ref={ pdfRef }>
+    <div>
       <h1>{doc.fileName}</h1>
-      <PDFPreview fileUrl={`http://localhost:5000/${doc.filePath}`}/>
+      <div ref={pdfRef} className="relative inline-block">
+        <PDFPreview fileUrl={`http://localhost:5000/${doc.filePath}`}/>
+      </div>
       <div className="absolute z-50" style={{ left: position.x, top: position.y }}>
         <SignatureField />
       </div>
       <button onClick={() => saveSignature(doc._id, relativeX, relativeY, 1)}>
         Save Position
+      </button>
+      <button onClick={ generatePDF }>
+        Generate Signed PDF
       </button>
     </div>
   </DndContext>

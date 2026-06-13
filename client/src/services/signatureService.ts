@@ -1,4 +1,5 @@
 import axios from "axios";
+const token = localStorage.getItem("token");
 
 export const saveSignature = async (
   documentId: string,
@@ -6,8 +7,6 @@ export const saveSignature = async (
   y: number,
   page: number
 ) => {
-
-  const token = localStorage.getItem("token");
 
   return axios.post(
     "http://localhost:5000/api/signatures",

@@ -29,6 +29,10 @@ const signatureSchema = new mongoose.Schema(
         required: true
     },
 
+    signatureText: {
+        type: String
+    },
+
     status: {
         type: String,
         default: "Pending"

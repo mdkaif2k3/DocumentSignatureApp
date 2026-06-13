@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
 const documentRoutes = require("./routes/documentRoutes");
 const signatureRoutes = require("./routes/signatureRoutes");
+const pdfRoutes = require("./routes/pdfRoutes");
 require("dotenv").config();
 
 const app = express();
@@ -16,6 +17,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 app.use("/api/signatures", signatureRoutes);
+
+app.use("/api/pdf", pdfRoutes);
+
+app.use("/signed", express.static(path.join(__dirname, "signed")));
 
 app.get("/", (req, res) => {
   res.send("API Running");
